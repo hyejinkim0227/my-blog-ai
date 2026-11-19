@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../server/generated/prisma"
+}
+datasource db {
+  provider = "sqlite"
+}
+model Post {
+  id        String    @id @default(uuid())
+  revision  Int       @default(0)
+  data      Json
+  updatedAt DateTime  @updatedAt
+  versions  Version[]
+  photos    Photo[]
+}
+model Version {
+  id        String   @id @default(uuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  revision  Int
+  data      Json
+  createdAt DateTime @default(now())
+  @@unique([postId, revision])
+}
+model Photo {
+  id        String   @id
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  path      String
+  name      String
+  mime      String
+  size      Int
+}
+model Style {
+  id        String @id
+  data      Json
+  updatedAt DateTime @updatedAt
+}
